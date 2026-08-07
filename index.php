@@ -72,6 +72,20 @@
 	<body>
 		<div class="container">
 			<h1>Hotel</h1>
+            <div>
+                <form action="">
+                    <label for="parking">Filter by parking:</label>
+                    <select name="parking" id="parking">
+                        <option value="">All</option>
+                        <option value="1">With Parking</option>
+                        <option value="0">Without Parking</option>
+                    </select>
+                    <label for="vote">Minimum Vote:</label>
+                    <input type="number" name="vote" id="vote" placeholder="vote" min="0" max="5">
+                    <label for="distance">Maximum Distance from Center (km):</label>
+                    <input type="number" name="distance" id="distance" placeholder="distance" min="0">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </form>
 			<div>
 				<table class="table table-hover table-borderless mb-0">
 					<thead class="table-light">
@@ -86,6 +100,32 @@
 					<tbody>
 						<?php foreach ($hotels as $hotel) { ?>
 							<tr>
+                                <?php
+                                if (isset($_GET['parking']) && $_GET['parking'] !== '' || isset($_GET['vote']) && $_GET['vote'] !== '' || isset($_GET['distance']) && $_GET['distance'] !== '') {
+                                    // Apply parking filter
+                                    if (isset($_GET['parking']) && $_GET['parking'] !== '') {
+                                        $parkingFilter = $_GET['parking'] === '1' ? true : false;
+                                        if ($hotel['parking'] !== $parkingFilter) {
+                                            continue;
+                                        }
+                                    }
+
+                                    // Apply vote filter
+                                    if (isset($_GET['vote']) && $_GET['vote'] !== '') {
+                                        $voteFilter = (int)$_GET['vote'];
+                                        if ($hotel['vote'] < $voteFilter) {
+                                            continue;
+                                        }
+                                    }
+
+                                    // Apply distance filter
+                                    if (isset($_GET['distance']) && $_GET['distance'] !== '') {
+                                        $distanceFilter = (float)$_GET['distance'];
+                                        if ($hotel['distance_to_center'] > $distanceFilter) {
+                                            continue;
+                                        }
+                                    }
+                                } ?>
 								<td><?php echo $hotel['name']; ?></td>
 								<td><?php echo $hotel['description']; ?></td>
 								<td><?php echo $hotel['parking'] ? 'Yes' : 'No'; ?></td>
